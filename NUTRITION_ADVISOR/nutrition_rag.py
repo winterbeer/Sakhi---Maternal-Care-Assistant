@@ -54,10 +54,35 @@ vector_store = Chroma.from_texts(
 vector_store.get(include=["metadatas", "documents", "embeddings"])
 
 #search the docs
-
-from langchain.chains import RetrievalQA
-from langchain.chains import RetrievalQAWithSourcesChain
-
+from langchain.retrievers.multi_query import MultiQueryRetriever
 llm = Ollama(model="llama3")
+
+multiquery_retriever = MultiQueryRetriever.from_llm(
+    llm = llm,
+    retriever=vector_store.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": 5},
+        filter=None,
+    ),
+)
+
+
+
+#Build RAG Chain to get only answers from our documents
+from langchain.chains import RetrievalQA
+from langchain.retrievers.multi_query import MultiQueryRetriever
+nutrition_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    retriever=multiquery_retriever,
+    return_source_documents=True,
+    chain_type="stuff",
+)
+# Example query
+query = "What are the benefits of a high-protein diet?"
+
+result = nutrition_chain.invoke({"query": query})
+print(result)
+
+
 
 

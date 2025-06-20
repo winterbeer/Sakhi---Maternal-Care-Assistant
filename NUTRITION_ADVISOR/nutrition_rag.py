@@ -77,11 +77,10 @@ nutrition_chain = RetrievalQA.from_chain_type(
     return_source_documents=True,
     chain_type="stuff",
 )
-# Example query
-query = "What are the benefits of a high-protein diet?"
 
-result = nutrition_chain.invoke({"query": query})
-print(result)
+def query_nutrition_advice(query: str):
+    result = nutrition_chain.invoke({"query": query})
+    return result
 
 
 

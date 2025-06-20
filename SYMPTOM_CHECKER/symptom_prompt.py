@@ -60,14 +60,13 @@ llm = Ollama(model="llama3")
 # Create the LangChain chain with your prompt and parser
 chain = template | llm | parser
 
-result = chain.invoke({
-    "severity": "moderate",
-    "symptoms": "nausea, vomiting",
-    "trimester": "second",
-    "format_instructions": format_instructions
-})
-
-print(result)
+def analyze_symptom(symptoms: str , severity: int , trimester: str):
+    return chain.invoke({
+        "symptoms": symptoms,
+        "severity": severity,
+        "trimester": trimester,
+        "format_instructions": format_instructions
+    })
 
 
 
